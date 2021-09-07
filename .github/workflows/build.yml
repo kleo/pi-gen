@@ -22,7 +22,7 @@ jobs:
         uses: docker/setup-qemu-action@v1.2.0
         with:
           image: tonistiigi/binfmt:latest
-          platforms: all
+          platforms: 386
       -
         name: Available platforms
         run: echo ${{ steps.qemu.outputs.platforms }}
