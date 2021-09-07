@@ -1,0 +1,60 @@
+name: build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Get current date
+        run: echo "CURRENT_DATE=`echo $(date '+%Y-%m-%d')`" >> $GITHUB_ENV
+      -
+        name: Get short commit hash
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1.2.0
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+      -
+        name: Available platforms
+        run: echo ${{ steps.qemu.outputs.platforms }}
+      -
+        name: Get dependencies
+        run: >
+          apt-get update && apt-get install -y coreutils quilt parted qemu-user-static debootstrap zerofree zip \
+          dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc \
+          qemu-utils kpartx
+      -
+        name: Start build
+        run: >
+          sudo -E
+          IMG_NAME="raspberrypi"
+          RELEASE="buster"
+          DEPLOY_ZIP="1"
+          LOCALE_DEFAULT="en_GB.UTF-8"
+          TARGET_HOSTNAME="raspberrypi"
+          KEYBOARD_KEYMAP="gb"
+          KEYBOARD_LAYOUT="English (UK)"
+          TIMEZONE_DEFAULT="Europe/London"
+          FIRST_USER_NAME="pi"
+          FIRST_USER_PASS="raspberry"
+          ENABLE_SSH="0"
+          STAGE_LIST="stage0 stage1 stage2"
+          ./build.sh
+      -
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Test build ${{ env.SHORT_SHA }}"
+          files: |
+            deploy/${{ env.CURRENT_DATE }}-raspberrypi-lite.zip
