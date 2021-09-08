@@ -48,7 +48,7 @@ jobs:
           FIRST_USER_PASS="raspberry"
           ENABLE_SSH="0"
           STAGE_LIST="stage0 stage1 stage2"
-          ./build.sh
+          ./build-docker.sh
       -
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
