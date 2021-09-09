@@ -5,6 +5,9 @@ on:
     branches:
       - 'gh-actions'
 
+permissions:
+  contents: write
+
 jobs:
   build-raspberrypi-image:
     runs-on: ubuntu-latest
