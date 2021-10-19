@@ -13,11 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Get current date
+        run: echo "CURRENT_DATE=`echo $(date '+%Y-%m-%d')`" >> $GITHUB_ENV
+
       - name: Build the Raspberry Pi OS image
         run: ./build-docker.sh
 
-      - name: Archive the Raspberry Pi OS image
-        uses: actions/upload-artifact@v2
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          name: raspberrypi-os-image
-          path: deploy/*.zip
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Test build ${{ env.SHORT_SHA }}"
+          files: |
+            deploy/${{ env.CURRENT_DATE }}-raspberrypi-lite.zip
