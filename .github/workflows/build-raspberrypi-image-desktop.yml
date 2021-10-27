@@ -3,7 +3,7 @@ name: Build a Raspberry Pi OS image
 on:
   push:
     branches:
-      - 'gh-actions'
+      - 'desktop'
 
 jobs:
   build-raspberrypi-image:
@@ -17,7 +17,7 @@ jobs:
         run: echo "CURRENT_DATE=`echo $(date '+%Y-%m-%d')`" >> $GITHUB_ENV
 
       - name: Build the Raspberry Pi OS image
-        run: ./build-docker.sh
+        run: ./build-docker.sh -c config-desktop
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
