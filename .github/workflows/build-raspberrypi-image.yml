@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-raspberrypi-image:
-    runs-on: ubuntu-latest
+    runs-on: [ARM64]
 
     name: Build a Raspberry Pi OS image
     steps:
@@ -16,8 +16,14 @@ jobs:
       - name: Get current date
         run: echo "CURRENT_DATE=`echo $(date '+%Y-%m-%d')`" >> $GITHUB_ENV
 
+      - name: Get dependencies
+        run: >
+          apt-get update && apt-get install -y coreutils quilt parted qemu-user-static debootstrap zerofree zip \
+          dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc \
+          qemu-utils kpartx
+
       - name: Build the Raspberry Pi OS image
-        run: sudo ./build.sh
+        run: sudo -E ./build.sh
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
